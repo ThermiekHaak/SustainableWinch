@@ -1,3 +1,3 @@
 from parapy.core import*
-class MotorInverter(Base):
+class Gear(Base):
     pass
