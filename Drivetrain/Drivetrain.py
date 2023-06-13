@@ -16,20 +16,18 @@ class Drivetrain(Base):
     starts_per_hour: float = Input()
 
     @Attribute
-    def numberofdrums(self):  # TODO Implment number of drums based on starts per hour
-
-        average_startime = 3600/self.starts_per_hour # required average start time to get enough starts per hour
+    def numberofdrums(self):
+        average_time = 3600/self.starts_per_hour # required average start time to get enough starts per hour
         Constant_handeling_time = op.coupling + op.tightening + op.launchtime + op.spoolingin
+        drums = ((average_time - Constant_handeling_time) * (op.spoolingout_speed / op.winchfieldlenght)) ** -1
 
-        drums = ((average_startime - Constant_handeling_time) * (op.spoolingout_speed / op.winchfieldlenght)) ** -1
-
-        if average_startime <= Constant_handeling_time or drums > 8:
+        if average_time <= Constant_handeling_time or drums > 8:
             print("The amount of starts per hour is unfeasible, the amount of drums will be fixed at TBD") # TODO TBD
             drums = 6
         return round(drums +1)
 
     @Attribute
-    def minimal_drivetrainrequirements(self):
+    def drivetrainrequirements(self):
         def power(t: float, force_func: Callable, velocity_func: Callable) -> Callable:
             return force_func(t) * velocity_func(t)
 
@@ -42,7 +40,6 @@ class Drivetrain(Base):
         max_velo  = -sc.optimize.golden(-1*(self.velocityprofile))
         continous_power  = sc.integrate.quad(power, 0, t_max)[0]/t_max
 
-
         requirements = {'max_force':  max_force,  # max of spline
                         'max_velocity': max_velo,  # max radial cable velocity
                         'peak_power': max_power,   # power
@@ -50,11 +47,14 @@ class Drivetrain(Base):
                         }
         return requirements
 
-
-
     @Part
     def drum(self):
-        return Drum()
+        # TODO calculate radius, axel radius, with and material
+        radius = .30
+        axel_radius = .8
+        width = 0.40
+        return Drum(radius = radius, axel_radius = axel_radius, width = width,
+        material = material, quantify = self.numberofdrums )
 
     @Part
     def gear(self):
