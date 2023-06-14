@@ -1,2 +1,2 @@
 # SustainableWinch
-KBE program using Parapy for the TU Delft Course AE4204
+KBE program using Parapy for the TU Delft Course AE4204.
