@@ -3,6 +3,8 @@ from typing import Callable
 import numpy as np
 import scipy as sc
 from parapy.core import*
+
+import OperationParameters
 from MotorInverter import MotorInverter
 from Gear import Gear
 from ElectricalMotor import ElectricalMotor
@@ -59,18 +61,28 @@ class Drivetrain(Base):
     @Part
     def gear(self):
         # TODO implement find req gear ratio
-        self.motor.eficiencymap
-        gear_ratio = None
-        max_velocity =
-        return Gear()
+        # self.motor.eficiencymap
+        # gear_ratio = None
+        # max_velocity =
+        # return Gear()
+        pass
 
     @Part
     def axel(self):
         pass
-
+# required_peakpower = Input()
+#     required_continouspower = Input()
+#     required_peaktorque = Input()
+#     required_maxrpm = Input()
     @Part
     def motor(self):
-        pass
+        maxrpm =
+        peaktorque = self.drivetrainrequirements['max_force'] *
+        return ElectricalMotor(required_peakpower = self.drivetrainrequirements[""],
+                               required_continouspower = self.drivetrainrequirements[""],
+                               required_peaktorque = self.drivetrainrequirements[""],
+                               required_maxrpm = self.drivetrainrequirements['max'])
+
 
     @Part
     def inverter(self):
