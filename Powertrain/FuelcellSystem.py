@@ -2,7 +2,7 @@ from parapy.core import *
 import numpy as np
 
 class FuelCellSystem(Base):
-    FC_power_required = Input(50)
+    FC_power_required = Input(50)           # Fuel cell power required to drive the winch [kW]
 
     @Attribute
     def dimensions(self):
