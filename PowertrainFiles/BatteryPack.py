@@ -1,11 +1,13 @@
 from parapy.core import *
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class BatteryPack(Base):
     BAT_power_req = Input(150.)          # Battery power in [kW]
-    BAT_energy_req = Input(100.)         # Battery energy in [kWh]
+    BAT_energy_req = Input(100.)         # Battery energy in [J]
     max_voltage = Input(600.)        # Maximum voltage when the battery is fully charged [V]
+    energy_profile = Input()
 
     @Attribute
     def max_cell_voltage(self):
@@ -51,14 +53,23 @@ class BatteryPack(Base):
         energy = self.cell_capacity * n_cell_parallel * self.cell_nominal_voltage * n_cell_series*3600
         while energy < self.BAT_energy_req:
             # print('increasing capacity for energy purposes')
+            print(n_cell_parallel)
             n_cell_parallel = n_cell_parallel + 1
             energy = self.cell_capacity*n_cell_parallel*self.cell_nominal_voltage*n_cell_series*3600
         print('First sizing complete battery stats:\nCells in series: ',n_cell_series,'\nCells in parallel: ',
               n_cell_parallel,'\nBattery capacicity:',energy,'\nMoving on to degradation calculations...')
         # TODO Add interface with external tool
+        soc = 1-self.energy_profile*1e3/energy
+        plt.plot(soc)
+        plt.show()
+        # With the initial battery sized it is time to calculate the degradation of the cells over the period of
+        # 10 flying seasons
+
         return [n_cell_series, n_cell_parallel]
     def cell_select(self):
         return [4.2,30,3,2.9,3.6,0.045]
+
+
 
 
 if __name__ == '__main__':

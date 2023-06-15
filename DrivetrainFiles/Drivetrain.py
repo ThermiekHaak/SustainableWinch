@@ -1,9 +1,9 @@
 import numpy as np
 from parapy.core import*
-from MotorInverter import MotorInverter
-from Gear import Gear
-from ElectricalMotor import ElectricalMotor
-from Drum import Drum
+#from MotorInverter import MotorInverter
+from DrivetrainFiles.Gear import Gear
+from DrivetrainFiles.ElectricalMotor import ElectricalMotor
+from DrivetrainFiles.Drum import Drum
 
 
 class Drivetrain(Base):
@@ -38,26 +38,26 @@ class Drivetrain(Base):
                         }
         return requirements
 
-    @Part
-    def drum(self):
-        pass
-
-    @Part
-    def gear(self):
-        # TODO implement find req gear ratio
-        self.motor.eficiencymap
-        gear_ratio = None
-        max_velocity =
-        return Gear()
-
-    @Part
-    def axel(self):
-        pass
-
-    @Part
-    def motor(self):
-        pass
-
-    @Part
-    def inverter(self):
-        pass
+    # @Part
+    # def drum(self):
+    #     return pass
+    #
+    # @Part
+    # def gear(self):
+    #     # TODO implement find req gear ratio
+    #     self.motor.eficiencymap
+    #     gear_ratio = None
+    #     max_velocity = 1000
+    #     return Gear()
+    #
+    # @Part
+    # def axel(self):
+    #     return pass
+    #
+    # @Part
+    # def motor(self):
+    #     return pass
+    #
+    # @Part
+    # def inverter(self):
+    #     return pass
