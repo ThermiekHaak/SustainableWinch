@@ -20,6 +20,7 @@ class Winch(Base):
     def drivetrain(self):
         return Drivetrain(starts_per_hour = self.operation_parameters[0])
 
+
     @Part
     def truck(self):
         return Truck()

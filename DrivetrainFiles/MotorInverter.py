@@ -5,7 +5,7 @@ class MotorInverter(Base):
 
     @Attribute
     def specs(self):
-        return self.selectInverter(self.maxcurrentdraw,self.powerrequired)
+        return self.selectInverter()
 
     @Attribute
     def name(self):

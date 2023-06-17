@@ -14,6 +14,9 @@ class Drivetrain(Base):
     # velocityprofile: Callable = Input()  # callable velocity-time function with input t[s] ,output v in [m/s]
     # cableforceprofile: Callable = Input()  # Callable Force-time function with input t [s],output force in [N]
     starts_per_hour: float = Input()
+    radius = Input(.30)
+    axel_radius = Input(.8)
+    width = Input(0.40)
 
     @Attribute
     def numberofdrums(self):
