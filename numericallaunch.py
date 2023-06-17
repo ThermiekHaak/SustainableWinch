@@ -1,17 +1,6 @@
 import scipy.integrate
 import numpy as np
 import matplotlib.pyplot as plt
-# Acceleration Phase ______________________________________________________________________________
-def V(F, m, t):
-    D =
-    a = (F - D)/m
-    for i in range(len(t)):
-        dv = t[i+1] - t[i]
-
-
-    return
-
-
 # FLying Phase ____________________________________________________________________________________
 def path(x: float, wl: float, alt: float, cut_off: float) -> float:
     """Assumed sinusoid path of glider
@@ -60,15 +49,21 @@ def beta(x: float, y:float,  wl: float) -> float:
     distance_to_winch = wl - x
     return np.arctan2(y,distance_to_winch)
 
-def Fc(W, V, glideratio, gamma, gamma_prime, Beta): # discontinous at x = π n + arctan(glideratio), n element Z
+def Fc(x: float, wl: float, alt: float, cut_off: float, W: float, V: float, glideratio:float):
+    # discontinous at x = π n + arctan(glideratio), n element Z
     """Cable Force, computed with the assumption that the Velocity change is zero
     Glider flies at max L/D to minimise required cable force / max climb angle"""
+    y = path(x, wl, alt, cut_off)
+    g = gamma(x, wl, alt, cut_off)
+    x_prime = V * np.cos(g)
+    g_prime = gamma_prime(x, x_prime, wl, alt, cut_off)
+    B = beta(x,y,wl)
     m = W/9.81
-    A = (W * np.sin(gamma) * glideratio )/(np.cos(Beta + gamma)*glideratio - np.sin(Beta + gamma))
-    B = ( m * V * np.sin(gamma_prime))/(np.cos(Beta + gamma)*glideratio - np.sin(Beta + gamma))
-    Bgp = np.sin(gamma_prime)
-    C = (W * np.cos(gamma))/(np.cos(Beta + gamma)*glideratio - np.sin(Beta + gamma))
-    Fc = (W * np.sin(gamma) * glideratio + m * V * np.sin(gamma_prime) + W * np.cos(gamma))/(np.cos(Beta + gamma)*glideratio - np.sin(Beta + gamma))
+    A = (W * np.sin(g) * glideratio )/(np.cos(B + g)*glideratio - np.sin(B + g))
+    B = ( m * V * np.sin(g_prime))/(np.cos(B + g)*glideratio - np.sin(B + g))
+    Bgp = np.sin(g_prime)
+    C = (W * np.cos(g))/(np.cos(B + g)*glideratio - np.sin(B + g))
+    Fc = (W * np.sin(g) * glideratio + m * V * np.sin(g_prime) + W * np.cos(g))/(np.cos(B + g)*glideratio - np.sin(B + g))
     return Fc
 
 def Rprime(x: float,  wl: float, alt: float, cut_off: float, V: float):
@@ -93,9 +88,48 @@ def time(x: np.ndarray, wl: float, alt: float, cut_off: float, V: float):
         t.append(ti)
     return np.array(t)
 
-#Chute deployment, retreiving phase ______________________________________________________________________________
+def launch_time(x: np.ndarray, wl: float, alt: float, cut_off: float, V: float):
+    def pathlenght(x, wl, alt, cut_off):
+        y_prime = path_xprime(x, wl, alt, cut_off)
+        return np.sqrt(1 + y_prime)
+    l = scipy.integrate.quad(pathlenght, 0, x, args=(wl, alt, cut_off))[0]
+    return l/V
 
 
+def Power_profile(wl:float, alt: float, cut_off: float, mass: float, glideratio: float, V: float, max_force):
+    # ground roll
+
+    a = .81 * max_force/mass
+    tend = V / a
+    t_roll = np.linspace(0,tend,10)
+    V_roll = a*t
+    Fc_roll = 0.9 * max_force
+    P_roll = Fc_roll * V_roll
+    P_maxroll = max(P_roll)
+    Energy_roll = scipy.integrate.simpson(P_roll,t_roll)
+
+    # airborne phase
+    x_max = wl - alt / np.tan(cut_off / 180 * np.pi)  # horizontal distance traveled [m] before decoupling
+    x = np.linspace(0, x_max, 1000)
+    t_air = time(x, wl, alt, cut_off, V)
+    t_max = launch_time(x_max, wl, alt, cut_off)  # Time [s] it takes to launch a glider
+    V_c = cable_vel(x, wl, alt, cut_off, V)  # Cable velocity [m/s]
+    W = mass * 9.81
+    F_c = Fc(x, wl, alt, cut_off, W, V, glideratio)
+    P_l = V_c * F_c
+    Pmax_launch = max(P_l)
+    Energy_launch = scipy.integrate.simpson(P_roll,t_air)/t_max
+
+    Pmax = max(P_maxroll,Pmax_launch)
+    Fcmax = Fc_roll
+    Vcmax = V
+    t_total = tend + t_max
+    P_average = (Energy_roll + Energy_launch)/(tend+t_max)
+    dict = {'Force': Fcmax,
+            'Velocity': Vcmax,
+            'maxPower': Pmax,
+            'time': t_total}
+    return dict
 
 
 
@@ -116,11 +150,8 @@ if __name__ == "__main__":
     g = gamma(x, wl, alt, cut_off)
     g_prime = gamma_prime(x, np.cos(g)*V, wl, alt, cut_off)
     B = beta(x, y, wl)
-
     Fc = Fc(W, V, glideratio, g, g_prime, B)
     cable_vel = CableVelocity(x, wl, alt, cut_off, V)
-
-
     plt.plot(t, cable_vel)
     plt.plot(t, Fc)
     plt.plot(t, cable_vel*Fc, color = 'black')

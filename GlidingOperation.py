@@ -35,6 +35,10 @@ class GlidingOperation(Base):
     #     @Part
     #     def gliders(self,fleet):
     #         return Glider(mass = self.fleet[self.name]['Mass [kg]'])
+    @Part
+    def Glider(self):
+        # TODO implement return multiple gliders pass down winch_distance and
+        # TODO required_altitude
 
 
     @Part
