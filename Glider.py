@@ -1,5 +1,6 @@
 from parapy.core import *
 import numpy as np
+from numericallaunch import cable_vel, Fc
 
 class Glider(Base):
     mass = Input(350)           # Mass of the glider [kg]

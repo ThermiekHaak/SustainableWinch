@@ -60,7 +60,6 @@ class Drivetrain(Base):
     @Part
     def gear(self):
         # TODO implement find req gear ratio
-        # self.motor.eficiencymap
         # gear_ratio = None
         # max_velocity =
         # return Gear()

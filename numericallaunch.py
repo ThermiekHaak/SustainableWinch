@@ -1,7 +1,18 @@
 import scipy.integrate
 import numpy as np
 import matplotlib.pyplot as plt
+# Acceleration Phase ______________________________________________________________________________
+def V(F, m, t):
+    D =
+    a = (F - D)/m
+    for i in range(len(t)):
+        dv = t[i+1] - t[i]
 
+
+    return
+
+
+# FLying Phase ____________________________________________________________________________________
 def path(x: float, wl: float, alt: float, cut_off: float) -> float:
     """Assumed sinusoid path of glider
     f(x) = A sin (B (x+C)) + D
@@ -81,6 +92,8 @@ def time(x: np.ndarray, wl: float, alt: float, cut_off: float, V: float):
         ti = l/V
         t.append(ti)
     return np.array(t)
+
+#Chute deployment, retreiving phase ______________________________________________________________________________
 
 
 
