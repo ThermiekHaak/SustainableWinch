@@ -1,6 +1,6 @@
 from parapy.core import *
 import numpy as np
-from numericallaunch import cable_vel, Fc , launch_time
+from numericallaunch import Power_profile
 
 class Glider(Base):
     mass = Input(350)            # Mass of the glider [kg]
