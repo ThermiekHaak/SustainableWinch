@@ -1,7 +1,8 @@
 from parapy.core import *
+from parapy.geom import *
 import numpy as np
 
-class FuelCellSystem(Base):
+class FuelCellSystem(GeomBase):
     FC_power_required = Input(50)           # Fuel cell power required to drive the winch [kW]
 
     @Attribute

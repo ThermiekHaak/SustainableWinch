@@ -36,9 +36,10 @@ class GlidingOperation(Base):
     #     def gliders(self,fleet):
     #         return Glider(mass = self.fleet[self.name]['Mass [kg]'])
     @Part
-    def Glider(self):
+    def glider(self):
         # TODO implement return multiple gliders pass down winch_distance and
         # TODO required_altitude
+        return Glider()
 
 
     @Part
@@ -46,7 +47,7 @@ class GlidingOperation(Base):
         return Winch(energy_source = 'FC',operation_parameters =
                      [self.starts_per_hour,self.winch_distance,self.flying_window,self.consecutive_operation,
                       self.overnight_charging_power,self.overnight_charging_time],fleet = self.fleet,
-                     power_profile = self.p_profile
+                     P_param = self.glider.P_profile
                      )
 
     @Part
@@ -54,7 +55,7 @@ class GlidingOperation(Base):
         return Winch(energy_source='BEV', operation_parameters=
         [self.starts_per_hour, self.winch_distance, self.flying_window, self.consecutive_operation,
          self.overnight_charging_power, self.overnight_charging_time], fleet=self.fleet,
-                     power_profile=self.p_profile
+                     P_param = self.glider.P_profile
                      )
 
 if __name__ == '__main__':

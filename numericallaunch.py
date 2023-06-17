@@ -102,7 +102,7 @@ def Power_profile(wl:float, alt: float, cut_off: float, mass: float, glideratio:
     a = .81 * max_force/mass
     tend = V / a
     t_roll = np.linspace(0,tend,10)
-    V_roll = a*t
+    V_roll = a*t_roll
     Fc_roll = 0.9 * max_force
     P_roll = Fc_roll * V_roll
     P_maxroll = max(P_roll)
@@ -112,13 +112,13 @@ def Power_profile(wl:float, alt: float, cut_off: float, mass: float, glideratio:
     x_max = wl - alt / np.tan(cut_off / 180 * np.pi)  # horizontal distance traveled [m] before decoupling
     x = np.linspace(0, x_max, 1000)
     t_air = time(x, wl, alt, cut_off, V)
-    t_max = launch_time(x_max, wl, alt, cut_off)  # Time [s] it takes to launch a glider
-    V_c = cable_vel(x, wl, alt, cut_off, V)  # Cable velocity [m/s]
+    t_max = launch_time(x_max, wl, alt, cut_off,V)  # Time [s] it takes to launch a glider
+    V_c = CableVelocity(x, wl, alt, cut_off, V)  # Cable velocity [m/s]
     W = mass * 9.81
     F_c = Fc(x, wl, alt, cut_off, W, V, glideratio)
     P_l = V_c * F_c
     Pmax_launch = max(P_l)
-    Energy_launch = scipy.integrate.simpson(P_roll,t_air)/t_max
+    Energy_launch = scipy.integrate.simpson(P_l,t_air)/t_max
 
     Pmax = max(P_maxroll,Pmax_launch)
     Fcmax = Fc_roll
@@ -128,7 +128,9 @@ def Power_profile(wl:float, alt: float, cut_off: float, mass: float, glideratio:
     dict = {'Force': Fcmax,
             'Velocity': Vcmax,
             'maxPower': Pmax,
-            'time': t_total}
+            'avgPower': P_average,
+            'time': t_total
+            }
     return dict
 
 

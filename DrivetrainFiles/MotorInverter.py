@@ -2,7 +2,10 @@ from parapy.core import*
 class MotorInverter(Base):
     maxcurrentdraw = Input()
     powerrequired = Input()
-    specs = self.select(maxcurrentdraw,powerrequired)
+
+    @Attribute
+    def specs(self):
+        return self.selectInverter(self.maxcurrentdraw,self.powerrequired)
 
     @Attribute
     def name(self):
