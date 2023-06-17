@@ -1,7 +1,8 @@
 from parapy.core import *
+from parapy.geom import *
 import numpy as np
 
-class H2Tank(Base):
+class H2Tank(GeomBase):
     # Constants:
     rho_H2_350 = 22.4478        # Density of hydrogen at 350 bars [kg/m^3]
     rho_H2_700 = 37.898         # Density of hydrogen at 700 bars [kg/m^3]
@@ -19,6 +20,23 @@ class H2Tank(Base):
     @Attribute
     def tank_properties(self):
         return self.tank_sizing()
+
+    # @Part
+    # def geom(self):
+    #     return
+
+    @Part
+    def cylinder(self):
+        return Cylinder(radius = self.tank_properties[3]*1000, height = self.tank_properties[2]*1000)
+
+    @Part
+    def endcap1(self):
+        return Sphere(radius = self.tank_properties[3]*1000)
+
+    @Part
+    def endcap2(self):
+        return Sphere(radius = self.tank_properties[3]*1000, position = translate(self.position,'z'
+                                                                                 ,self.tank_properties[2]*1000))
 
     def tank_sizing(self):
         if self.H2_mass == 0:
