@@ -15,7 +15,7 @@ class FuelCellSystem(GeomBase):
 
     @Part
     def geom(self):
-        return Box(multiplicity = self.fc_sys_select()['number'],length = self.fc_sys_select()['length'],
+        return Box(quantify = self.fc_sys_select()['number'],length = self.fc_sys_select()['length'],
                    width = self.fc_sys_select()['width'], height = self.fc_sys_select()['height'],
                    position = translate(self.position if child.index == 0 else child.previous.position,
                                         'x',self.fc_sys_select()['length']+50))

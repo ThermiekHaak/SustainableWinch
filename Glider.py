@@ -1,8 +1,9 @@
 from parapy.core import *
+from parapy.geom import GeomBase
 import numpy as np
 from numericallaunch import Power_profile
 
-class Glider(Base):
+class Glider(GeomBase):
     mass = Input(350)            # Mass of the glider [kg]
     max_force = Input(6000)      # Max force the cable is allowed pull on the glider [kN]
     glideratio = Input(42)       # max L/D
