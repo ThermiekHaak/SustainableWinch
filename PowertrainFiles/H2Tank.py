@@ -27,16 +27,18 @@ class H2Tank(GeomBase):
 
     @Part
     def cylinder(self):
-        return Cylinder(quantify = self.tank_properties[1],radius = self.tank_properties[3]*1000, height = self.tank_properties[2]*1000)
+        return Cylinder(quantify = self.tank_properties[1],radius = self.tank_properties[3]*1000, height = self.tank_properties[2]*1000
+                        ,position=translate(self.position, 'x', child.index * (self.tank_properties[3]*2e3 + 100)))
 
     @Part
     def endcap1(self):
-        return Sphere(radius = self.tank_properties[3]*1000,quantify = self.tank_properties[1])
+        return Sphere(quantify = self.tank_properties[1], radius = self.tank_properties[3]*1000,position = translate(
+            self.position, 'x',child.index*(self.tank_properties[3]*2e3+100)))
 
     @Part
     def endcap2(self):
-        return Sphere(quantify = self.tank_properties[1],radius = self.tank_properties[3]*1000, position = translate(self.position,'z'
-                                                                                 ,self.tank_properties[2]*1000))
+        return Sphere(quantify = self.tank_properties[1],radius = self.tank_properties[3]*1000, position = translate(translate(self.position,'z'
+                                                                                 ,self.tank_properties[2]*1000),'x',child.index*(self.tank_properties[3]*2e3+100)))
 
     def tank_sizing(self):
         if self.H2_mass == 0:

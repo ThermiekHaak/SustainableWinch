@@ -1,11 +1,19 @@
 from parapy.core import *
+from parapy.geom import *
 import numpy as np
 
 
 
-class Truck(Base):
+class Truck(GeomBase):
     winchmass: float = Input()
     winchdimensions: np.ndarray = Input()
+    @Part
+    def cab(self):
+        return Box(width = 2400, length = 2400, height = 3100,position = translate(self.position,'z',400))
+
+    @Part
+    def bed(self):
+        return Box(width = 2400, length = 6060, height = 30, position = translate(self.cab.position,'y',2400))
 
     @Attribute
     def type(self):

@@ -77,14 +77,14 @@ class BatteryPack(GeomBase):
         # Now we have a battery that will perform well, however we need to make sure it performs well in the future as
         # well without degrading too much. First calculate how much the cells degrade based on the usage profile, using
         # BLAST Lite.
-        remaining_capacity = self.cell_deg(energy,5,self.BAT_energy_req)
+        remaining_capacity = self.cell_deg(energy,1,self.BAT_energy_req)
         # With the degradation calculated, check if we still make our requirements after two years
         while remaining_capacity*energy < self.BAT_energy_req:
             # If we don't make the requirements add five cells in parallel to make sure we do. This is quite coarse as
             # the BLAST calculations are expensive.
             n_cell_parallel = n_cell_parallel + 5
             energy = self.cell_capacity * n_cell_parallel * self.cell_nominal_voltage * n_cell_series * 3600
-            remaining_capacity = self.cell_deg(energy,5,self.BAT_energy_req)
+            remaining_capacity = self.cell_deg(energy,1,self.BAT_energy_req)
 
         return [n_cell_series, n_cell_parallel]
     def cell_select(self):
