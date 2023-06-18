@@ -98,12 +98,16 @@ def launch_time(x: np.ndarray, wl: float, alt: float, cut_off: float, V: float):
 
 def Power_profile(wl:float, alt: float, cut_off: float, mass: float, glideratio: float, V: float, max_force):
     # ground roll
+    lossfactor = 0.9
+    Fc_roll = min(0.9 * max_force * 1000,5000)
+    a = Fc_roll/mass * lossfactor
+    if a/9.81 > 2:  # if launch is more than 2 g's
+        a = 2 * 9.81
+        Fc_roll = a * mass / lossfactor
 
-    a = .81 * max_force/mass
     tend = V / a
     t_roll = np.linspace(0,tend,10)
     V_roll = a*t_roll
-    Fc_roll = 0.9 * max_force
     P_roll = Fc_roll * V_roll
     P_maxroll = max(P_roll)
     Energy_roll = scipy.integrate.simpson(P_roll,t_roll)
@@ -154,13 +158,15 @@ if __name__ == "__main__":
     # g = gamma(x, wl, alt, cut_off)
     # g_prime = gamma_prime(x, np.cos(g)*V, wl, alt, cut_off)
     # B = beta(x, y, wl)
-    # Fc1 = Fc(x, wl, alt, cut_off, W, V, glideratio)
-    # cable_vel = CableVelocity(x, wl, alt, cut_off, V)
-    # # plt.plot(t, cable_vel)
-    # plt.plot(t, Fc1)
-    # # plt.plot(t, cable_vel*Fc, color = 'black')
-    # plt.show()
-    Power_profile(wl, alt, cut_off, mass, glideratio, V, max_force)
+    Fc1 = Fc(x, wl, alt, cut_off, W, V, glideratio)
+    cable_vel = CableVelocity(x, wl, alt, cut_off, V)
+    plt.plot(t, cable_vel)
+    plt.plot(t, Fc1)
+    plt.plot(t, cable_vel*Fc1, color = 'black')
+    plt.show()
+    max_force = 10
+    abc = Power_profile(wl, alt, cut_off, mass, glideratio, V, max_force)
+    print(abc)
 
 
 
