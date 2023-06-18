@@ -59,10 +59,10 @@ def Fc(x: float, wl: float, alt: float, cut_off: float, W: float, V: float, glid
     g_prime = gamma_prime(x, x_prime, wl, alt, cut_off)
     B = beta(x,y,wl)
     m = W/9.81
-    A = (W * np.sin(g) * glideratio )/(np.cos(B + g)*glideratio - np.sin(B + g))
-    B = ( m * V * np.sin(g_prime))/(np.cos(B + g)*glideratio - np.sin(B + g))
-    Bgp = np.sin(g_prime)
-    C = (W * np.cos(g))/(np.cos(B + g)*glideratio - np.sin(B + g))
+    # A = (W * np.sin(g) * glideratio )/(np.cos(B + g)*glideratio - np.sin(B + g))
+    #B = ( m * V * np.sin(g_prime))/(np.cos(B + g)*glideratio - np.sin(B + g))
+    # Bgp = np.sin(g_prime)
+    # C = (W * np.cos(g))/(np.cos(B + g)*glideratio - np.sin(B + g))
     Fc = (W * np.sin(g) * glideratio + m * V * np.sin(g_prime) + W * np.cos(g))/(np.cos(B + g)*glideratio - np.sin(B + g))
     return Fc
 
@@ -146,16 +146,19 @@ if __name__ == "__main__":
     y = path(x, wl, alt, cut_off= cut_off)
     R = np.sqrt((wl -x)**2 + y**2)
     t = time(x, wl, alt, cut_off, V)
+    mass = W/9.81
+    glideratio
 
-    g = gamma(x, wl, alt, cut_off)
-    g_prime = gamma_prime(x, np.cos(g)*V, wl, alt, cut_off)
-    B = beta(x, y, wl)
-    Fc = Fc(W, V, glideratio, g, g_prime, B)
-    cable_vel = CableVelocity(x, wl, alt, cut_off, V)
-    plt.plot(t, cable_vel)
-    plt.plot(t, Fc)
-    plt.plot(t, cable_vel*Fc, color = 'black')
-    plt.show()
+    # g = gamma(x, wl, alt, cut_off)
+    # g_prime = gamma_prime(x, np.cos(g)*V, wl, alt, cut_off)
+    # B = beta(x, y, wl)
+    # Fc1 = Fc(x, wl, alt, cut_off, W, V, glideratio)
+    # cable_vel = CableVelocity(x, wl, alt, cut_off, V)
+    # # plt.plot(t, cable_vel)
+    # plt.plot(t, Fc1)
+    # # plt.plot(t, cable_vel*Fc, color = 'black')
+    # plt.show()
+    Power_profile(wl, alt, cut_off, mass, glideratio, V, max_force)
 
 
 
