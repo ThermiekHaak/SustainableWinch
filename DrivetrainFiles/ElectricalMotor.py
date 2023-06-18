@@ -3,6 +3,7 @@ class ElectricalMotor(Base):
     required_peakpower = Input()
     required_continouspower = Input()
     required_peaktorque = Input()
+    required_maxrpm= Input()
 
     @Attribute
     def mass(self):

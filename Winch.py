@@ -9,7 +9,7 @@ class Winch(Base):
     energy_source = Input('FC')         # Energy source the glider winch uses to operate it's electric motor
     operation_parameters = Input()
     fleet = Input()
-    power_profile = Input()
+    P_param = Input()
     @Part
     def powertrain(self):
         return Powertrain(energy_source = self.energy_source, n_drum = self.drivetrain.numberofdrums,)
@@ -18,7 +18,8 @@ class Winch(Base):
 
     @Part
     def drivetrain(self):
-        return Drivetrain(powerprofiles = self.power_profile,starts_per_hour = self.operation_parameters[0])
+        return Drivetrain(starts_per_hour = self.operation_parameters[0])
+
 
     @Part
     def truck(self):

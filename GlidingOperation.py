@@ -36,9 +36,13 @@ class GlidingOperation(Base):
     #     def gliders(self,fleet):
     #         return Glider(mass = self.fleet[self.name]['Mass [kg]'])
     @Part
-    def Glider(self):
+    def gliders(self):
         # TODO implement return multiple gliders pass down winch_distance and
         # TODO required_altitude
+        return Glider(quantify = len(self.fleet), mass = self.fleet.iloc[child.index][1], max_force = self.fleet.iloc[child.index][2],
+                      glideratio = self.fleet.iloc[child.index][3], V = self.fleet.iloc[child.index][4]/3.6, label =
+                      self.fleet.iloc[child.index][0])
+
 
 
     @Part
@@ -46,7 +50,7 @@ class GlidingOperation(Base):
         return Winch(energy_source = 'FC',operation_parameters =
                      [self.starts_per_hour,self.winch_distance,self.flying_window,self.consecutive_operation,
                       self.overnight_charging_power,self.overnight_charging_time],fleet = self.fleet,
-                     power_profile = self.p_profile
+                     P_param = self.glider.P_profile
                      )
 
     @Part
@@ -54,8 +58,25 @@ class GlidingOperation(Base):
         return Winch(energy_source='BEV', operation_parameters=
         [self.starts_per_hour, self.winch_distance, self.flying_window, self.consecutive_operation,
          self.overnight_charging_power, self.overnight_charging_time], fleet=self.fleet,
-                     power_profile=self.p_profile
+                     P_param = self.critical_launch()
                      )
+
+    def critical_launch(self):
+        p_max = np.zeros(self.gliders.size[-1])
+        p_avg = np.zeros(self.gliders.size[-1])
+        t_start = np.zeros(self.gliders.size[-1])
+
+        for i in range(self.gliders.size[-1]):
+            p_max[i] = self.gliders[i].P_profile['maxPower']
+            p_avg[i] = self.gliders[i].P_profile['avgPower']
+            t_start[i] = self.gliders[i].P_profile['time']
+        energy = p_avg*t_start
+        # The powertrain will be sized for the max power and max energy so these are returned
+        return [max(p_max),max(energy),t_start[np.argmax(energy)]]
+
+
+
+
 
 if __name__ == '__main__':
     from parapy.gui import display

@@ -3,10 +3,10 @@ import numpy as np
 import scipy as sc
 from parapy.core import*
 import OperationParameters
-from MotorInverter import MotorInverter
-from Gear import Gear
-from ElectricalMotor import ElectricalMotor
-from Drum import Drum
+from .MotorInverter import MotorInverter
+from .Gear import Gear
+from .ElectricalMotor import ElectricalMotor
+from .Drum import Drum
 import OperationParameters as op
 
 

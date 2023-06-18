@@ -20,8 +20,8 @@ class Powertrain(Base):
     cable_length = Input(1000)                      # Length of the cable of the winch [m]
     cable_car_speed = Input(10)                     # Speed the cable car is driving with when driving back to the field [m/s]
     t_hook_cable = Input(30)                        # Time it takes to hook all the cables to the cable car [s]
-    starts_per_day = Input(80)                      # Amount of starts made per flying day
-    consecutive_operation = Input(2)                # Amount of consecutive days of operation [days]
+    starts_per_day = Input(120)                      # Amount of starts made per flying day
+    consecutive_operation = Input(4)                # Amount of consecutive days of operation [days]
     overnight_charging_time = Input(10)             # Amount of time we can charge the winch overnight [hours]
     overnight_charging_power = Input(11)            # Charging power available overnight [kW]
     max_tank_length = Input(5)
@@ -46,9 +46,9 @@ class Powertrain(Base):
             net_energy_per_set = energy_per_set-charging_per_set
             energy_per_day = net_energy_per_set*sets_per_day
             overnight_charging_energy = self.overnight_charging_power*1e3*self.overnight_charging_time*3600
-            # Calculate the battery capacity needed and make it 10% bigger so we are sure we can handle all flying days
-            BAT_capacity = 1.1*(energy_per_day*self.consecutive_operation-(overnight_charging_energy*
-                                                                          (self.consecutive_operation-1)))
+            # Calculate the battery capacity needed
+            BAT_capacity = energy_per_day*self.consecutive_operation-(overnight_charging_energy*
+                                                                          (self.consecutive_operation-1))
             BAT_power =max_power/1e3
             # Resample the power profile:
             powerprofile_func = sp.interp1d(np.arange(0,len(self.p_profile)*0.01,0.01),self.p_profile)
@@ -75,14 +75,14 @@ class Powertrain(Base):
             FC_power = power_ratio*max_power/1e3
             battery_power_start = self.p_profile-FC_power*1e3
             battery_energy_set = self.n_drum*(np.trapz(battery_power_start)*0.01)- (self.n_drum-1)*FC_power*1e3*self.t_between_start
-            print('Battery Energy per set: ',battery_energy_set/1e6,' MJ ')
+            print('Battery Energy per set: ',battery_energy_set/3.6e6,' kWh ')
             while battery_energy_set > FC_power*1e3*(self.cable_length/self.cable_car_speed+2*self.t_hook_cable):
-                print(battery_energy_set - FC_power*1e3*(self.cable_length/self.cable_car_speed+2*self.t_hook_cable))
+                #print(battery_energy_set - FC_power*1e3*(self.cable_length/self.cable_car_speed+2*self.t_hook_cable))
                 power_ratio = power_ratio+0.0001
                 FC_power = power_ratio * max_power/1e3
                 battery_power_start = self.p_profile - FC_power*1e3
                 battery_energy_set = self.n_drum*(np.trapz(battery_power_start)*0.01)- (self.n_drum-1)*FC_power*1e3*self.t_between_start
-            while battery_energy_set < 0.5 * FC_power*1e3*(self.cable_length/self.cable_car_speed+2*self.t_hook_cable):
+            while battery_energy_set <  FC_power*1e3*(self.cable_length/self.cable_car_speed+2*self.t_hook_cable):
                 power_ratio = power_ratio - 0.01
                 FC_power = power_ratio * max_power / 1e3
                 battery_power_start = self.p_profile - FC_power * 1e3
@@ -177,6 +177,7 @@ class Powertrain(Base):
                 # is retrieving the cables.
                 pp_bat[first_start+self.n_drum*(l_start+self.t_between_start):
                        first_start+self.n_drum*(l_start+self.t_between_start)+t_between_set] = -charge_power_1
+                # Reset the power to zero if the battery is already full
                 pp_bat[pp_bat.cumsum() < -2*charge_power_1] = 0
                 # Set the time of the next first start to when the cable car has driven back and the cables have been unhooked
                 first_start = int(first_start + self.n_drum * (l_start + self.t_between_start) + t_between_set)
