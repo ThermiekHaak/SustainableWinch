@@ -12,13 +12,15 @@ class Winch(Base):
     P_param = Input()
     @Part
     def powertrain(self):
-        return Powertrain(energy_source = self.energy_source, n_drum = self.drivetrain.numberofdrums,)
+        return Powertrain(energy_source = self.energy_source,op_param = self.operation_parameters,p_max = self.P_param[0],
+                          p_avg = self.P_param[1],t_start = self.P_param[2])
+
 
 
 
     @Part
     def drivetrain(self):
-        return Drivetrain(starts_per_hour = self.operation_parameters[0])
+        return Drivetrain(starts_per_hour = self.operation_parameters['starts_hour'])
 
 
     @Part

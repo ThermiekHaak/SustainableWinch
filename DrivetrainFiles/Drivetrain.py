@@ -12,7 +12,8 @@ import OperationParameters as op
 
 
 class Drivetrain(Base):
-    powerprofile = input()
+    # powerprofile = input()
+    starts_per_hour = Input()
 
     @Attribute
     def numberofdrums(self):
@@ -52,41 +53,41 @@ class Drivetrain(Base):
     def mech_efficiency(self):
         return self.drum.efficiency * self.gear.efficiency * self.motor.efficiency * self.inverter.efficiency
 
-    @Part
-    def drum(self):
-        # TODO calculate radius, axel radius, with and material
-        radius = .30
-        axel_radius = .8
-        width = 0.40
-        return Drum(radius = radius, axel_radius = axel_radius, width = width,
-        material = material, quantify = self.numberofdrums )
+    # @Part
+    # def drum(self):
+    #     # TODO calculate radius, axel radius, with and material
+    #     radius = .30
+    #     axel_radius = .8
+    #     width = 0.40
+    #     return Drum(radius = radius, axel_radius = axel_radius, width = width,
+    #     material = material, quantify = self.numberofdrums )
 
-    @Part
-    def gear(self):
-        # TODO implement find req gear ratio
-        # gear_ratio = None
-        # max_velocity =
-        # return Gear()
-        pass
+    # @Part
+    # def gear(self):
+    #     # TODO implement find req gear ratio
+    #     # gear_ratio = None
+    #     # max_velocity =
+    #     # return Gear()
+    #     pass
 
-    @Part
-    def axel(self):
-        return xel(self.numberofdrums, self.powerprofile)
+    # @Part
+    # def axel(self):
+    #     return Axel(self.numberofdrums, self.powerprofile)
 # required_peakpower = Input()
 #     required_continouspower = Input()
 #     required_peaktorque = Input()
 #     required_maxrpm = Input()
-    @Part
-    def motor(self):
-        maxrpm =
-        peaktorque = self.drivetrainrequirements['max_force'] *
-        return ElectricalMotor(required_peakpower = self.drivetrainrequirements[""],
-                               required_continouspower = self.drivetrainrequirements[""],
-                               required_peaktorque = self.drivetrainrequirements[""],
-                               required_maxrpm = self.drivetrainrequirements['max'])
+#     @Part
+#     def motor(self):
+#         maxrpm = 0
+#         peaktorque = self.drivetrainrequirements['max_force'] * 0
+#         return ElectricalMotor(required_peakpower = self.drivetrainrequirements[""],
+#                                required_continouspower = self.drivetrainrequirements[""],
+#                                required_peaktorque = self.drivetrainrequirements[""],
+#                                required_maxrpm = self.drivetrainrequirements['max'])
 
 
-    @Part
-    def inverter(self):
-        pass
+    # @Part
+    # def inverter(self):
+    #     pass
 
