@@ -122,7 +122,7 @@ def Power_profile(wl:float, alt: float, cut_off: float, mass: float, glideratio:
     F_c = Fc(x, wl, alt, cut_off, W, V, glideratio)
     P_l = V_c * F_c
     Pmax_launch = max(P_l)
-    Energy_launch = scipy.integrate.simpson(P_l,t_air)/t_max
+    Energy_launch = scipy.integrate.simpson(P_l,t_air)
 
     Pmax = max(P_maxroll,Pmax_launch)
     Fcmax = Fc_roll

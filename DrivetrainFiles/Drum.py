@@ -22,6 +22,4 @@ class Drum(Base):
         m = internal_volume * density
         return m
 
-    @Attribute
-    def Inertia(self):  # TODO implement inertia
-        pass
+

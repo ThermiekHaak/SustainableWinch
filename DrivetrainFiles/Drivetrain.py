@@ -12,7 +12,8 @@ import OperationParameters as op
 
 
 class Drivetrain(Base):
-    powerprofile = input()
+    powerprofile = Input()
+    material = Input()
 
     @Attribute
     def numberofdrums(self):
@@ -71,11 +72,9 @@ class Drivetrain(Base):
 
     @Part
     def axel(self):
-        return xel(self.numberofdrums, self.powerprofile)
-# required_peakpower = Input()
-#     required_continouspower = Input()
-#     required_peaktorque = Input()
-#     required_maxrpm = Input()
+        Torque = self.powerprofile["maxforce"]/self.drum.radius
+        return Axel(Torque, self.numberofdrums, self.drum.width, self.material)
+
     @Part
     def motor(self):
         maxrpm =

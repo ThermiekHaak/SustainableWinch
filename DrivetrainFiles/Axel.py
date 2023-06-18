@@ -6,7 +6,7 @@ class Axel(Base):
     numberofdrums = Input(2)
     drumwidth = Input(0.25)
     material = Input()
-    
+
     @Atribute
     def lenght(self):
         return self.numberofdrums * self.drumwidth +  (self.numberofdrums - 1) * 0.5 + .25  #drums 50 cm appart + one end of 25 cm for gearing
