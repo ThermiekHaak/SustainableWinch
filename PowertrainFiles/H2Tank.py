@@ -10,8 +10,8 @@ class H2Tank(GeomBase):
     rho_CF = 1580               # Density of carbon fiber used for the tank [kg/m^3]
     rho_lin = 960               # Density of the liner used to line the tank from the inside
     H2_mass = Input(20)         # Hydrogen mass stored in the tanks [kg]
-    max_length = Input(5)
-    max_diameter = Input(0.4)
+    max_length = Input()
+    max_diameter = Input(0.6)
     pressure = Input(350)
 
     # In principle, it is preferred to have one larger volume tank compared to multiple smaller volume tanks especially
@@ -28,17 +28,23 @@ class H2Tank(GeomBase):
     @Part
     def cylinder(self):
         return Cylinder(quantify = self.tank_properties[1],radius = self.tank_properties[3]*1000, height = self.tank_properties[2]*1000
-                        ,position=translate(self.position, 'x', child.index * (self.tank_properties[3]*2e3 + 100)))
+                        ,position=translate(self.position, 'y',self.tank_properties[3]*2e3 + 50,'x', child.index * (self.tank_properties[3]*2e3 + 50)
+                                            - (self.tank_properties[1]-1)*self.tank_properties[3]*2e3/2,
+                                            'z',self.tank_properties[3]*1e3 + 10))
 
     @Part
     def endcap1(self):
         return Sphere(quantify = self.tank_properties[1], radius = self.tank_properties[3]*1000,position = translate(
-            self.position, 'x',child.index*(self.tank_properties[3]*2e3+100)))
+            self.position,'y',self.tank_properties[3]*2e3 + 50, 'x',child.index * (self.tank_properties[3]*2e3 + 50)
+                                            - (self.tank_properties[1]-1)*self.tank_properties[3]*2e3/2,'z',
+            self.tank_properties[3]*1e3 + 10))
 
     @Part
     def endcap2(self):
-        return Sphere(quantify = self.tank_properties[1],radius = self.tank_properties[3]*1000, position = translate(translate(self.position,'z'
-                                                                                 ,self.tank_properties[2]*1000),'x',child.index*(self.tank_properties[3]*2e3+100)))
+        return Sphere(quantify = self.tank_properties[1],radius = self.tank_properties[3]*1000,
+                      position = translate(self.position,'z',(self.tank_properties[2]+self.tank_properties[3])*1e3,'y',self.tank_properties[3]*2e3 + 50,
+                                          'x',child.index * (self.tank_properties[3]*2e3 + 50)
+                                            - (self.tank_properties[1]-1)*self.tank_properties[3]*2e3/2))
 
     def tank_sizing(self):
         if self.H2_mass == 0:

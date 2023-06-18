@@ -12,6 +12,7 @@ class PressureRegulator(GeomBase):
     def H2_massflow(self):
         # Calculate the required mass flow needed to supply the fuel cell system with enough hydrogen.
         m_dot = self.FC_power*1e3/(self.efficiency*self.H2_energy_density)
+        return m_dot
 
     @Attribute
     def mass(self):
@@ -22,7 +23,7 @@ class PressureRegulator(GeomBase):
         return [self.pressure_reg_select()['Length'],self.pressure_reg_select()['Width'],
                 self.pressure_reg_select()['Height']]
 
-    @Part(in_tree=False)
+    @Part
     def geom(self):
         return Box(length = self.dimensions[0],width = self.dimensions[1],height = self.dimensions[2])
 

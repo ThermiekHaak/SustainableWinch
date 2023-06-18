@@ -19,7 +19,7 @@ class Powertrain(GeomBase):
     p_max = Input(150)                              # Maximum power needed during the start [kW]
     p_avg = Input(100)                              # Average power needed during the start [kW]
     t_start = Input(30)                             # Duration of the start [s]
-    max_tank_length = Input(5)
+    max_tank_length = Input(3.1)
 
     # Constants
     efficiency = 0.5                                # Efficiency of the fuel cell system [-]
@@ -61,7 +61,7 @@ class Powertrain(GeomBase):
 
         else:
             # Size the fuel cell system by taking a certain ratio of the maximum power
-            power_ratio = 0.3
+            power_ratio = 0.5
             FC_power = power_ratio*self.p_avg               # Fuel cell power in [kW]
             battery_power_start = (self.p_avg-FC_power)*1e3 # Battery Power in [W]
             battery_energy_set = self.n_drum*(battery_power_start*self.t_start)- (self.n_drum-1)*FC_power*1e3*self.op_param['start2start']
@@ -105,32 +105,34 @@ class Powertrain(GeomBase):
                            BAT_energy_req = self.powertrain_sizes[1],
                            max_voltage = self.v_max_inverter,
                            energy_profile = self.powertrain_sizes[4],
-                           position = translate(self.position, 'z',-30,'y',6060,'x',1200))
+                           position = rotate90(translate(self.position, 'z',450,'y',2500,'x',1200),'x'))
 
 
     @Part
     def fc(self):
         return FuelCellSystem(quantify = 0 if self.energy_source == 'BEV' else 1, hidden = True
         if self.energy_source == 'BEV' else False, FC_power_required = self.powertrain_sizes[2],
-                              position = translate(self.position, 'z',30,'y',7000,'x',1200))
+                              position = translate(self.tanks[0].position,'y',50+self.tanks[0].tank_properties[3]*2e3,'z',50))
 
     @Part
     def tanks(self):
         return H2Tank(quantify = 0 if self.energy_source == 'BEV' else 1, hidden = True
         if self.energy_source == 'BEV' else False, H2_mass = self.powertrain_sizes[3],
-                      max_length = self.max_tank_length,position = translate(self.position, 'z',30,'y',6060,'x',1200))
+                      max_length = self.max_tank_length,position = translate(self.position, 'z',400,'y',2400,'x',1200))
 
 
     @Part
     def converter(self):
-        return Converter(quantify = 0 if self.energy_source == 'BEV' else 1, hidden = True
+        return Converter(quantify = 0 if self.energy_source == 'BEV' or self.power_calc()[2] > 50 else 1, hidden = True
         if self.energy_source == 'BEV' else False, FC_Power = self.powertrain_sizes[2],
-                         max_voltage = self.v_max_inverter)
+                         max_voltage = self.v_max_inverter,position = translate(self.fc[0].geom[0].center_position,
+                         'z',self.fc[0].dimensions[2]/2))
 
-    @Part(in_tree= False if energy_source=='BEV'else True)
+    @Part
     def pressure_regulator(self):
         return PressureRegulator(quantify = 0 if self.energy_source == 'BEV' else 1, hidden = True
-        if self.energy_source == 'BEV' else False ,FC_power = self.powertrain_sizes[2])
+        if self.energy_source == 'BEV' else False ,FC_power = self.powertrain_sizes[2],position =
+                                 translate(self.tanks[0].cylinder[0].center_position,'y',self.tanks[0].tank_properties[3]*1e3+50))
 
 
     def energy_profile(self,FC_Power):

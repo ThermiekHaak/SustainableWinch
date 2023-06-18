@@ -17,7 +17,8 @@ class Converter(GeomBase):
 
     @Part
     def geom(self):
-        return Box(length = self.dimensions[0],width = self.dimensions[1], height = self.dimensions[2])
+        return Box(length = self.dimensions[0],width = self.dimensions[1], height = self.dimensions[2],
+                   centered = True, position = translate(self.position,'z',self.dimensions[2]/2))
 
     def dc_dc_select(self):
         COPEC = {
