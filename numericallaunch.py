@@ -98,7 +98,7 @@ def launch_time(x: np.ndarray, wl: float, alt: float, cut_off: float, V: float):
 
 def Power_profile(wl:float, alt: float, cut_off: float, mass: float, glideratio: float, V: float, max_force):
     # ground roll
-    lossfactor = 0.9
+    lossfactor = 0.95
     Fc_roll = min(0.9 * max_force * 1000,5000)
     a = Fc_roll/mass * lossfactor
     if a/9.81 > 2:  # if launch is more than 2 g's
