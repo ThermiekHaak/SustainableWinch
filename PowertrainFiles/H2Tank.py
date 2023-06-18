@@ -31,7 +31,7 @@ class H2Tank(GeomBase):
 
     @Part
     def endcap1(self):
-        return Sphere(radius = self.tank_properties[3]*1000)
+        return Sphere(radius = self.tank_properties[3]*1000, multiplicity = 2)
 
     @Part
     def endcap2(self):
