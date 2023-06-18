@@ -1,18 +1,20 @@
-from typing import Callable
 import numpy as np
 import scipy as sc
 from parapy.core import*
+from parapy.geom import *
 import OperationParameters
-from .MotorInverter import MotorInverter
-from .Gear import Gear
-from .ElectricalMotor import ElectricalMotor
-from .Drum import Drum
-from .Axel import Axel
+from MotorInverter import MotorInverter
+from Gear import Gear
+from ElectricalMotor import ElectricalMotor
+from Drum import Drum
+from Axel import Axel
 import OperationParameters as op
+from Database.electric_drives import Electrical_engines
 
 
-class Drivetrain(Base):
+class Drivetrain(GeomBase):
     powerprofile = Input()
+    system_Voltage = Input(400)
     material = Input()
 
     @Attribute
@@ -26,66 +28,75 @@ class Drivetrain(Base):
             drums = 6
         return round(drums +1)
 
-    # @Attribute
-    # def drivetrainrequirements(self):
-    #     def power(t: float, force_func: Callable, velocity_func: Callable) -> Callable:
-    #         return force_func(t) * velocity_func(t)
-    #
-    #     #Finding max power by finding the power interval and doing bisection
-    #     x_0 = 30  # estimate 1 of when the winch start including reeling in is over
-    #     x_1 = 60  # estimate 2 of when the winch start including reeling in is over
-    #     t_max = sc.optimize(power, x_0, fprime=None, args = (self.cableforceprofile, self.velocityprofile), x1 = x_1, tol = 1)
-    #     max_power = -sc.optimize.golden(-1*(power), args =(self.cableforceprofile, self.velocityprofile))
-    #     max_force = -sc.optimize.golden(-1*(self.cableforceprofile))
-    #     max_velo  = -sc.optimize.golden(-1*(self.velocityprofile))
-    #     continous_power  = sc.integrate.quad(power, 0, t_max)[0]/t_max
-    #
-    #     requirements = {'max_force':  max_force,  # max of spline
-    #                     'max_velocity': max_velo,  # max radial cable velocity
-    #                     'peak_power': max_power,   # power
-    #                     'continous_power': continous_power,  # power to be sustained longer than 3 seconds
-    #                     }
-    #     return requirements
     @Attribute
     def mass(self):
-        return self.drum.mass + self.gear.mass + self.axel.mass
+        return self.drum.mass + self.gear.mass + self.axel.mass + self.motor.mass + self.inverter.mass
+
     @Attribute
-    def mech_efficiency(self):
+    def efficiency(self):
         return self.drum.efficiency * self.gear.efficiency * self.motor.efficiency * self.inverter.efficiency
+
+    @Attribute
+    def component_selection_and_sizing(self) -> dict:
+        feasible_selection = []
+        for i in Electrical_engines:  # filter_out engines based on peak power
+            if i['peakpower'] >= self.powerprofile['maxPower']:
+                feasible_selection.append(i)
+
+        if not feasible_selection:
+            raise Exception("electrical_drives db does not contain a option that can provide the peak power")
+
+        gearing = 20
+        selected_engine = None
+        for i in feasible_selection:
+            required_gearing = np.sqrt(
+                self.powerprofile['Force'] / i['ratedTorque'] * self.powerprofile['ratedRPM'] / self.powerprofile[
+                    'Vmaxf'])  # required gearing to achieve max_force, V, at rated rpm,torque of the engine
+            drumradius = self.powerprofile['Force'] / i['ratedTorque'] / required_gearing
+            if required_gearing > gearing and drumradius < 1:
+                gearing = required_gearing
+                selected_engine = i
+        if selected_engine:  # TODO
+            return {'Gearing': gearing,
+                    'Engine': selected_engine,
+                    'Drumradius': drumradius}
+
+        raise Exception(
+            'The rated Rpm of the engines listed in electrical_drives db do not provide sufficient torque '
+            'to maintain a  gearratio larger than 1/20')
+
 
     @Part
     def drum(self):
-        # TODO calculate radius, axel radius, with and material
-        radius = .30
-        axel_radius = .8
-        width = 0.40
-        return Drum(radius = radius, axel_radius = axel_radius, width = width,
-        material = material, quantify = self.numberofdrums )
+        return Drum(radius = self.component_selection_and_sizing["Drumradius"], axel_radius = self.axel_radius,
+                    width = 0.4, material = self.material, quantify = self.numberofdrums )
 
     @Part
     def gear(self):
-        # TODO implement find req gear ratio
-        # gear_ratio = None
-        # max_velocity =
-        # return Gear()
-        pass
+        return Gear(self.component_selection_and_sizing['Gearing']) # TODO
 
     @Part
     def axel(self):
-        Torque = self.powerprofile["maxforce"]/self.drum.radius
-        return Axel(Torque, self.numberofdrums, self.drum.width, self.material)
+        Torque = self.powerprofile["maxforce"]/self.component_selection_and_sizing["Drumradius"] # Note can't reference to object drum as this creates a reference loop
+        return Axel(Torque, self.numberofdrums, self.drum.width, self.material) # TODO
 
     @Part
     def motor(self):
-        maxrpm =
-        peaktorque = self.drivetrainrequirements['max_force'] *
-        return ElectricalMotor(required_peakpower = self.drivetrainrequirements[""],
-                               required_continouspower = self.drivetrainrequirements[""],
-                               required_peaktorque = self.drivetrainrequirements[""],
-                               required_maxrpm = self.drivetrainrequirements['max'])
-
+        name = self.component_selection_and_sizing['Engine']['name']
+        peakpower = self.component_selection_and_sizing['Engine']['peakpower']
+        continouspower = self.component_selection_and_sizing['Engine']['continouspower']
+        efficiency = self.component_selection_and_sizing['Engine']['efficiency']
+        mass = self.component_selection_and_sizing['Engine']['mass']
+        # dimensions = # TODO add dimensions in the db
+        return ElectricalMotor(name = name, peakpower = peakpower, continouspower = continouspower,
+                               efficiency = efficiency, mass = mass)
 
     @Part
     def inverter(self):
-        pass
+        currentdraw = self.powerprofile['maxPower']/self.system_Voltage
+        return MotorInverter(maxcurrentdraw = currentdraw, voltage = self.system_Voltage)
 
+if __name__ is "__main__":
+    from parapy.gui import display
+    obj = Drivetrain
+    display(obj)

@@ -5,6 +5,7 @@ class Drum(Base):
     axel_radius = Input()
     width: float = Input()    # width from guard to guard [m]
     material: dict = Input()  # dictionary with material properties
+    efficiency: float = Input(0.99)
 
     @Attribute
     def mass(self): # TODO check drum design especially the thicknesses and coupling to the main axel
@@ -21,5 +22,6 @@ class Drum(Base):
         internal_volume = 2 * volumedrumside + volume_axelslot + volumedrumcylinder
         m = internal_volume * density
         return m
+
 
 

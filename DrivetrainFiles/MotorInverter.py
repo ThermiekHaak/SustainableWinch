@@ -1,7 +1,8 @@
 from parapy.core import*
+from Database.inverters import HVI, LVI
 class MotorInverter(Base):
     maxcurrentdraw = Input()
-    powerrequired = Input()
+    voltage = Input(400)
 
     @Attribute
     def specs(self):
@@ -10,10 +11,6 @@ class MotorInverter(Base):
     @Attribute
     def name(self):
         return self.specs['name']
-
-    @Attribute
-    def cost(self):
-        return self.specs['cost']
 
     @Attribute
     def mass(self):
@@ -25,5 +22,17 @@ class MotorInverter(Base):
 
     def selectInverter(self):
         # TODO Implement selection from db
-        specs = dict()
-        return specs
+        if self.voltage > 400:
+            candidates = HVI
+        else:
+            candidates = LVI
+
+        efficiency = 0
+        selected = None
+        for i in candidates:
+            if i['peakpower'] > self.powerrequired and i["efficiency"] > efficiency:
+                selected = i
+        if selected:
+            return selected
+
+        raise Exception("No Inverter in the database is worthy")

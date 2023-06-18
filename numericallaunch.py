@@ -1,6 +1,7 @@
 import scipy.integrate
 import numpy as np
 import matplotlib.pyplot as plt
+import warnings
 # FLying Phase ____________________________________________________________________________________
 def path(x: float, wl: float, alt: float, cut_off: float) -> float:
     """Assumed sinusoid path of glider
@@ -113,24 +114,40 @@ def Power_profile(wl:float, alt: float, cut_off: float, mass: float, glideratio:
     Energy_roll = scipy.integrate.simpson(P_roll,t_roll)
 
     # airborne phase
-    x_max = wl - alt / np.tan(cut_off / 180 * np.pi)  # horizontal distance traveled [m] before decoupling
-    x = np.linspace(0, x_max, 1000)
-    t_air = time(x, wl, alt, cut_off, V)
-    t_max = launch_time(x_max, wl, alt, cut_off,V)  # Time [s] it takes to launch a glider
-    V_c = CableVelocity(x, wl, alt, cut_off, V)  # Cable velocity [m/s]
-    W = mass * 9.81
-    F_c = Fc(x, wl, alt, cut_off, W, V, glideratio)
+    unfeasible = True
+    while unfeasible:
+        x_max = wl - alt / np.tan(cut_off / 180 * np.pi)  # horizontal distance traveled [m] before decoupling
+        x = np.linspace(0, x_max, 1000)
+        t_air = time(x, wl, alt, cut_off, V)
+        t_max = launch_time(x_max, wl, alt, cut_off,V)  # Time [s] it takes to launch a glider
+        V_c = CableVelocity(x, wl, alt, cut_off, V)  # Cable velocity [m/s]
+        W = mass * 9.81
+        F_c = Fc(x, wl, alt, cut_off, W, V, glideratio)
+        F_cairborn_max = max(F_c)
+        if F_cairborn_max < max_force * 1000:
+            unfeasible = False
+        else:
+            alt -= 10
+            warnings.warn(f'The desired altitude gain is unfeasible with the given field lenght and glider'
+                          f'altitude gain is set to {alt}')
+
+
     P_l = V_c * F_c
     Pmax_launch = max(P_l)
     Energy_launch = scipy.integrate.simpson(P_l,t_air)
 
     Pmax = max(P_maxroll,Pmax_launch)
-    Fcmax = Fc_roll
+    if Fc_roll > F_cairborn_max:
+        Vmaxf = V
+    else:
+        Vmaxf = V_c[np.where(F_c == F_cairborn_max)[0]][0]
+    Fcmax = max(Fc_roll, F_cairborn_max)
     Vcmax = V
     t_total = tend + t_max
     P_average = (Energy_roll + Energy_launch)/(tend+t_max)
     dict = {'Force': Fcmax,
-            'Velocity': Vcmax,
+            'Vmaxforce': Vmaxf,
+            'Vmax': Vcmax,
             'maxPower': Pmax,
             'avgPower': P_average,
             'time': t_total
