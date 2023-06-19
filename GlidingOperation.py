@@ -73,13 +73,13 @@ class GlidingOperation(Base):
 
     @Part
     def fuel_cell_winch(self):
-        return Winch(energy_source = 'FC',operation_parameters = self.op_param,fleet = self.fleet,P_param =
-        self.critical_launch())
+        return Winch(energy_source = 'FC',operation_parameters = self.op_param,fleet = self.fleet, P_param =
+        self.critical_launch(), profile = self.power_profile())
 
     @Part
     def battery_winch(self):
         return Winch(energy_source='BEV', operation_parameters= self.op_param, fleet=self.fleet,P_param =
-        self.critical_launch())
+        self.critical_launch(), profile = self.power_profile())
 
     def critical_launch(self):
         p_max = np.zeros(self.gliders.size[-1])
@@ -93,6 +93,17 @@ class GlidingOperation(Base):
         energy = p_avg*t_start
         # The powertrain will be sized for the max power and max energy so these are returned
         return [max(p_max)/1e3,p_avg[np.argmax(energy)]/1e3,t_start[np.argmax(energy)]]
+
+
+    def power_profile(self):
+        m = 0
+        heaviest = None
+        for i in range(self.gliders.size[-1]):
+            if self.gliders[i].mass > m:
+                m = self.gliders[i].mass
+                heaviest = self.gliders[i]
+
+        return heaviest.P_profile
 
 
 

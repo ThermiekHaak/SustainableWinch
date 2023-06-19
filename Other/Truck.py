@@ -23,11 +23,11 @@ class Truck(GeomBase):
     def cost(self):
         return self.truckselection()["cost"]
 
-    @Attribute
-    def depreciation(self):
-        def function(cost): #TODO Implement depreciation function
-            return cost * 0.5
-        return function(self.cost)
+    # @Attribute
+    # def depreciation(self):
+    #     def function(cost): #TODO Implement depreciation function
+    #         return cost * 0.5
+    #     return function(self.cost)
 
     @Attribute
     def mass(self):

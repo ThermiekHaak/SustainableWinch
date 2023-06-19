@@ -146,7 +146,7 @@ def Power_profile(wl:float, alt: float, cut_off: float, mass: float, glideratio:
     t_total = tend + t_max
     P_average = (Energy_roll + Energy_launch)/(tend+t_max)
     dict = {'Force': Fcmax,
-            'Vmaxforce': Vmaxf,
+            'Vmaxf': Vmaxf,
             'Vmax': Vcmax,
             'maxPower': Pmax,
             'avgPower': P_average,

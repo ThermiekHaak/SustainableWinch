@@ -1,8 +1,9 @@
 from parapy.core import*
-class Gear(Base): #TODO decide how to determine/estimate stuff
+from parapy.geom import*
+class Gear(GeomBase): #TODO decide how to determine/estimate stuff
     gearratio = Input()  # motorpm/axelrpm
-    max_torque = Input()
-    max_rpm = Input()
+    max_torque = Input(500)
+    max_rpm = Input(5000)
     efficiency = Input(.95)
 
     @Attribute

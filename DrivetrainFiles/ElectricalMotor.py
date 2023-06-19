@@ -1,10 +1,14 @@
 from parapy.core import*
-class ElectricalMotor(Base):
+from parapy.geom import*
+class ElectricalMotor(GeomBase):
     name = Input()
     peakpower = Input()
     continouspower = Input()
     efficiency = Input()
     mass = Input()
-    # dimensions = Input() # TODO remove after dimensions are added in db
-    # TODO implement geometry and placement
+    dimensions = Input()
+
+    @Part
+    def Cylinder(self):
+        return Cylinder(radius = self.dimensions[0], height = self.dimensions[1], position= self.position)
 

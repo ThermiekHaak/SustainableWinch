@@ -6,6 +6,7 @@ E1 = {'name': 'P100T4',        # https://www.saluqimotors.com/products/
       'ratedRPM': 3500,
       'maxRpM': 5000,
       'mass':27,
+      'dimensions': (.4, .3),
       'inverter_included': True}
 
 E2 = {'name': 'SIMONTICS_SD_Pro', # https://quickselector.azurewebsites.net/ldp-finder?REGION=WW&LANGUAGE=en&KEEPALIVEURL=https%3A%2F%2Fmall.industry.siemens.com%2Fspice%2Fjom%2Fpolling%2Fpoll&RESULTURL=https%3A%2F%2Fmall.industry.siemens.com%2Fspice%2Fjom%2FController%2Fselector%2FreceiveResul
@@ -17,6 +18,7 @@ E2 = {'name': 'SIMONTICS_SD_Pro', # https://quickselector.azurewebsites.net/ldp-
       'maxRpM': 1800,
       'Voltagerange': (400, 690),
       'mass': 960,
+      'dimensions': (.4, .3),
       'inverter_included': False}
 
 
@@ -30,6 +32,7 @@ E3 = {'name': 'SIMOTICS_XP-315L-IM_B3-2p', # https://quickselector.azurewebsites
       'maxRpM': 5000,
       'Voltagerange': (400, 690),
       'mass': 1360,
+      'dimensions': (.4, .3),
       'inverter_included': False}
 #SMG220 OHW
 E4= {'name': 'SMG220 OHW',
@@ -41,6 +44,19 @@ E4= {'name': 'SMG220 OHW',
       'maxRpM': 15500,
       'Voltagerange': (390, 500),
       'mass': 60,
+      'dimensions': (.4, .3),
       'inverter_included': False}
 
-Electrical_engines = [E1,E2,E3,E4]
+E5= {'name': 'Test',
+      'peakpower': 180 ,
+      'continuouspower': 140,
+      'avg_efficiency': 93,         #Assumed
+      'ratedTorque': 300,
+      'ratedRPM': 3600,
+      'maxRpM': 15500,
+      'Voltagerange': (390, 600),
+      'mass': 120,
+      'dimensions': (.4, .3),
+      'inverter_included': False}
+
+Electrical_engines = [E1,E2,E3,E4, E5]
